@@ -1,0 +1,46 @@
+@startuml
+
+actor Client
+participant "API Gateway" as APIGateway
+participant Cache
+participant "Token Service" as TokenService
+participant "Microservices" as Microservices
+participant Auth
+
+Client -> APIGateway : Login Request
+APIGateway -> Auth : credentials auth
+Auth --> APIGateway : Access Token
+APIGateway --> Client : Access Token
+
+Client -> APIGateway: Initial Request (with access token)
+APIGateway -> Cache: Token Cache Check
+Cache -> APIGateway: Token Found (Valid)
+APIGateway -> Microservices: Authorize Request
+Microservices -> Cache: Extract User Info
+Cache -> Microservices: User Info
+Microservices -> Microservices: process request
+Microservices --> APIGateway: Response
+APIGateway --> Client: Response
+
+Client -> APIGateway: Initial Request (with access token)
+APIGateway -> Cache: Token Cache Check
+Cache -> APIGateway: Token Not Found or Expired
+APIGateway -> TokenService: Perform Token Introspection
+TokenService -> APIGateway: Token Introspection Result
+APIGateway -> Cache: Cache Token and User Info
+APIGateway -> Microservices: Authorize Request
+Microservices -> Cache: Extract User Info
+Cache -> Microservices: User Info
+Microservices -> Microservices: process request
+Microservices --> APIGateway: Response
+APIGateway --> Client: Response
+
+APIGateway -> Cache: Token Refresh and Cache Maintenance
+Cache -> TokenService: Refresh Tokens
+TokenService -> Cache: Updated Tokens
+Cache -> Cache: Evict Expired or Revoked Tokens
+
+Client -> APIGateway: Refresh Token
+APIGateway -> Auth: 
+
+@enduml
