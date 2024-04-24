@@ -1,8 +1,8 @@
 import { createClient } from 'redis';
 
-const redisHost = 'redis-12867.c330.asia-south1-1.gce.cloud.redislabs.com';
-const redisPort = 12867;
-const redisPassword = 'xYYCs0wnPvO5nhrHrnmWdE0QnmmKSfGh';
+const redisHost = '';
+const redisPort = ;
+const redisPassword = '';
 
 
 console.log({
